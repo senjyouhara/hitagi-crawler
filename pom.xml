@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.senjyouhara</groupId>
+	<artifactId>crawler-group</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>8</java.version>
+		<spring-context-support.version>1.0.2</spring-context-support.version>
+		<commons-collections4.version>4.2</commons-collections4.version>
+		<top.jfunc.common.utils.version>1.8.3.3</top.jfunc.common.utils.version>
+    <seata.version>1.1.0</seata.version>
+    <fastjson.version>1.2.54</fastjson.version>
+		<elasticsearch.version>6.4.1</elasticsearch.version>
+		<spring.data.elasticsearch.version>3.1.10.RELEASE</spring.data.elasticsearch.version>
+		<dubbo.version>2.7.3</dubbo.version>
+		<dubbo.actuator.version>2.7.1</dubbo.actuator.version>
+		<dubbo-registry-nacos.version>2.7.1</dubbo-registry-nacos.version>
+		<dubbo.kryo.version>2.7.3</dubbo.kryo.version>
+		<nacos-client.version>1.1.4</nacos-client.version>
+		<nacos.config.version>2.1.0.RELEASE</nacos.config.version>
+		<swagger.version>2.9.2</swagger.version>
+		<swagger.ui.version>1.8.7</swagger.ui.version>
+		<swagger.mg.ui.version>1.0.6</swagger.mg.ui.version>
+		<swagger.butler.version>2.0.0</swagger.butler.version>
+		<jjwt.version>0.9.1</jjwt.version>
+		<druid-starter>1.1.21</druid-starter>
+		<sharding-sphere.version>3.1.0</sharding-sphere.version>
+		<security-oauth2.version>2.3.5.RELEASE</security-oauth2.version>
+		<security-jwt.version>1.0.9.RELEASE</security-jwt.version>
+		<redisson.version>3.12.5</redisson.version>
+		<redisson-spring.version>3.12.5</redisson-spring.version>
+		<kaptcha.version>2.3.2</kaptcha.version>
+		<patchca.version>1.0.0</patchca.version>
+		<hutool.version>4.3.1</hutool.version>
+		<common-crypto.version>1.8.0</common-crypto.version>
+		<jasypt.version>2.0.0</jasypt.version>
+		<mysql.version>8.0.17</mysql.version>
+		<fastdfs.version>1.27-SNAPSHOT</fastdfs.version>
+		<hikariCP.version>3.4.0</hikariCP.version>
+		<mybatis-plus-boot-starter.version>3.2.0</mybatis-plus-boot-starter.version>
+		<aliyun-sdk-oss>3.4.0</aliyun-sdk-oss>
+		<qiniu-java-sdk>7.2.17</qiniu-java-sdk>
+		<easypoi.version>4.0.0</easypoi.version>
+		<spring-boot-admin.version>2.1.0</spring-boot-admin.version>
+		<jackson.version>2.9.5</jackson.version>
+		<velocity.version>1.7</velocity.version>
+		<commons-configuration.version>1.10</commons-configuration.version>
+		<txlcn.version>5.0.2.RELEASE</txlcn.version>
+		<SeimiCrawler.version>2.1.2</SeimiCrawler.version>
+		<platform-bom>Cairo-SR3</platform-bom>
+		<spring-cloud-alibaba-dependencies.version>0.9.0.RELEASE</spring-cloud-alibaba-dependencies.version>
+		<spring-boot-dependencies.version>2.1.6.RELEASE</spring-boot-dependencies.version>
+		<spring-cloud-dependencies.version>Greenwich.SR3</spring-cloud-dependencies.version>
+		<spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
+		<docker-maven-plugin.version>1.2.0</docker-maven-plugin.version>
+		<sonar.exclusions>senjyouhara-job/**/*, senjyouhara-register/**/*, senjyouhara-web/**/*</sonar.exclusions>
+		<docker.baseImage>openjdk:8-jre-alpine</docker.baseImage>
+		<docker.volumes>/tmp</docker.volumes>
+		<docker.image.prefix>hub.mall.com:8080/mallcloud</docker.image.prefix>
+		<docker.java.security.egd>-Djava.security.egd=file:/dev/./urandom</docker.java.security.egd>
+		<docker.java.opts>-Xms128m -Xmx128m</docker.java.opts>
+		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+	</properties>
+
+	<developers>
+		<developer>
+			<name>senjyouhara</name>
+			<email>ayano@loli.com.co</email>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:senjyouhara/hitagi-crawler.git</connection>
+		<developerConnection>scm:git:git@github.com:senjyouhara/hitagi-crawler.git</developerConnection>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.2</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>4.4.6</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/top.jfunc.common/utils -->
+			<dependency>
+				<groupId>top.jfunc.common</groupId>
+				<artifactId>utils</artifactId>
+				<version>${top.jfunc.common.utils.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/top.jfunc.common/common-crypto -->
+			<dependency>
+				<groupId>top.jfunc.common</groupId>
+				<artifactId>common-crypto</artifactId>
+				<version>${common-crypto.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>${commons-collections4.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.senjyouhara</groupId>
+				<artifactId>hitagi-crawler</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.senjyouhara</groupId>
+				<artifactId>hitagi-core-spring-boot-starter</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.senjyouhara</groupId>
+				<artifactId>hitagi-redis-spring-boot-starter</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- 在Redis基础上的一个Java实用工具包 -->
+			<dependency>
+				<groupId>org.redisson</groupId>
+				<artifactId>redisson</artifactId>
+				<version>${redisson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.redisson</groupId>
+				<artifactId>redisson-spring-boot-starter</artifactId>
+				<version>${redisson-spring.version}</version>
+			</dependency>
+
+			<!-- hutool java工具类库  -->
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-all</artifactId>
+				<version>${hutool.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>${commons-configuration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>20.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-parent</artifactId>
+				<version>${spring-boot-dependencies.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring-boot-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>${docker-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${maven-source-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>aliyun-repos</id>
+			<name>Aliyun Repository</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>aliyun-plugin</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<modules>
+
+		<module>hitagi-core-spring-boot-starter</module>
+
+		<module>hitagi-crawler</module>
+
+		<module>example</module>
+
+	</modules>
+</project>
