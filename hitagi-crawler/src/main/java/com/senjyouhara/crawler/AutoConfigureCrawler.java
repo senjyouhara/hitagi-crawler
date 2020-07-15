@@ -9,7 +9,13 @@ import com.senjyouhara.crawler.confg.CrawlerInit;
 import com.senjyouhara.crawler.confg.CrawlerProperty;
 import org.springframework.context.annotation.Import;
 
-@Import({CrawlerProperty.class,QueueManager.class,ThreadManager.class,CrawlerContext.class, CrawlerBeanPostProcessor.class,CrawlerInit.class})
+@Import({
+		CrawlerProperty.class,
+		QueueManager.class,
+		ThreadManager.class,
+		CrawlerContext.class,
+		CrawlerBeanPostProcessor.class,
+		CrawlerInit.class})
 public class AutoConfigureCrawler {
 
 }

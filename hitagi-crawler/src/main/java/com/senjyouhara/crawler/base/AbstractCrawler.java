@@ -66,36 +66,45 @@ public abstract class AbstractCrawler implements BaseCrawler {
 			"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.12) Gecko/20080219 Firefox/2.0.0.12 Navigator/9.0.0.6"
 	};
 
-	public AbstractCrawler(){
+	public AbstractCrawler() {
 		currentUserAgent = getUserAgent();
 	}
 
-	public String getUserAgent(){
-		int i = RandomUtils.nextInt(0,userAgent.length );
+	public String getUserAgent() {
+		int i = RandomUtils.nextInt(0, userAgent.length);
 		return userAgent[i];
 	}
 
-	public void addRequest(CrawlerRequest crawlerRequest){
+	@Override
+	public List<CrawlerRequest> startRequests() {
+		return null;
+	}
 
-		if(oldRequest != null){
+	public void addRequest(CrawlerRequest crawlerRequest) {
+
+		if (oldRequest != null) {
 //			cookie 传递
-			if(oldRequest.isCookieTransfer()){
+			if (oldRequest.isCookieTransfer()) {
 				List<CrawlerCookie> cookies = crawlerRequest.getCrawlerCookies();
 				List<CrawlerCookie> oldCookies = oldRequest.getCrawlerCookies();
 				ArrayList<CrawlerCookie> mergeCookies = new ArrayList<>(oldCookies);
-				if(cookies != null){
+				if (cookies != null) {
 					mergeCookies.addAll(cookies);
 				}
 				crawlerRequest.setCrawlerCookies(mergeCookies);
 			}
 
 //			元数据传递
-			if(oldRequest.getMeta() != null){
+			if (oldRequest.getMeta() != null) {
 				Map<String, Object> meta = crawlerRequest.getMeta();
 				Map<String, Object> oldMeta = oldRequest.getMeta();
-				HashMap<String, Object> map = new HashMap<>(oldMeta);
-				if(meta != null){
+				HashMap<String, Object> map = new HashMap<>();
+
+				if (meta != null) {
 					map.putAll(meta);
+				}
+				if (oldMeta != null) {
+					map.putAll(oldMeta);
 				}
 			}
 		}
@@ -104,29 +113,34 @@ public abstract class AbstractCrawler implements BaseCrawler {
 
 		CrawlerProcess crawlerProcess = new CrawlerProcess(crawlerName, crawlerRequest);
 		List<CrawlerRequest> queueAll = queueManager.getAll(crawlerName);
-		if(!requestList.contains(crawlerRequest)){
+		if (!requestList.contains(crawlerRequest)) {
 			requestList.add(crawlerRequest);
 		}
-
-		queueManager.add(crawlerName,crawlerRequest);
+		
+		queueManager.add(crawlerName, crawlerRequest);
 		threadManager.add(crawlerName, crawlerProcess);
 		oldRequest = crawlerRequest;
 	}
 
-//	开始产生请求队列 然后执行请求
+	//	开始产生请求队列 然后执行请求
 	public final void start() {
 
-		if(startUrls() != null && startUrls().length > 0){
+		if (startUrls() != null && startUrls().length > 0) {
 			for (String s : startUrls()) {
 				addRequest(RequestBuild.build(s, AbstractCrawler::responseHandler));
 			}
-		}else{
-			log.error(" startUrls is empty");
+		} else {
+			List<CrawlerRequest> crawlerRequests = startRequests();
+			if (crawlerRequests != null) {
+				for (CrawlerRequest c : crawlerRequests) {
+					addRequest(c);
+				}
+			}
 		}
 	}
 
-//	开启线程执行请求
-	public final void startRequest(){
+	//	开启线程执行请求
+	public final void startRequest() {
 		try {
 			threadManager.invock(crawlerName);
 		} catch (Exception e) {

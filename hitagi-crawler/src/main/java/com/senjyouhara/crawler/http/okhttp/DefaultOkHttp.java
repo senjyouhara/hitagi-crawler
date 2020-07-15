@@ -43,8 +43,6 @@ public class DefaultOkHttp implements HttpDownload {
 	@Override
 	public CrawlerResponse process(CrawlerRequest crawlerRequest) throws Exception {
 
-		log.info(" start request url : {}, params: {}", crawlerRequest.getUrl(),crawlerRequest.getParams());
-
 		OkHttpClient.Builder okBuild = OkHttpBuild.getInstance();
 
 		Object bean = CrawlerContext.getApplicationContext().getBean(crawlerName);

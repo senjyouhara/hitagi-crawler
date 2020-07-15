@@ -1,12 +1,10 @@
-package com.senjyouhara.example;
+package com.senjyouhara.example.reptile;
 
 import com.senjyouhara.crawler.annotation.Crawler;
 import com.senjyouhara.crawler.base.AbstractCrawler;
 import com.senjyouhara.crawler.base.RequestBuild;
 import com.senjyouhara.crawler.model.CrawlerResponse;
 import lombok.extern.log4j.Log4j2;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.seimicrawler.xpath.JXDocument;
 
 import java.util.List;

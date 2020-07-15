@@ -111,10 +111,10 @@ public class CrawlerContext implements ApplicationContextAware {
 
 	public static void run(Class<? extends AbstractCrawler> clazz){
 		AbstractCrawler bean = applicationContext.getBean(clazz);
-		if(bean == null){
-			log.error("The class [ {} ] is not found! ", clazz.getName());
-			return;
-		}
 		bean.start();
+	}
+
+	public static void run(AbstractCrawler cons){
+		cons.start();
 	}
 }
