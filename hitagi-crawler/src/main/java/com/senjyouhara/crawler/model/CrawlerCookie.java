@@ -8,10 +8,6 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class CrawlerCookie {
 
-//	域名
-	private String domain;
-//	路径
-	private String path;
 //	属性名
 	private String name;
 //	属性值

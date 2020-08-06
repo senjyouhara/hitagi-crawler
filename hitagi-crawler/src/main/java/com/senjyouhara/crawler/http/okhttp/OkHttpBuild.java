@@ -4,6 +4,7 @@ import com.senjyouhara.core.ssl.MyX509TrustManager;
 import com.senjyouhara.crawler.base.AbstractCrawler;
 import com.senjyouhara.crawler.enums.CrawlerContentType;
 import com.senjyouhara.crawler.enums.HttpMethod;
+import com.senjyouhara.crawler.model.CrawlerCookie;
 import com.senjyouhara.crawler.model.CrawlerRequest;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
@@ -52,10 +53,23 @@ public class OkHttpBuild {
 		Request.Builder requestBuilder = new Request.Builder();
 
 		requestBuilder.url(crawlerRequest.getUrl());
-
-		requestBuilder.header("User-Agent", crawlerRequest.isCookieTransfer() ? abstractCrawler.getCurrentUserAgent() : abstractCrawler.getUserAgent())
+		StringBuilder cookies = new StringBuilder();
+		if(crawlerRequest.getCrawlerCookies() != null && crawlerRequest.getCrawlerCookies().size() > 0){
+			for (int i = 0; i < crawlerRequest.getCrawlerCookies().size(); i++) {
+				CrawlerCookie crawlerCookie = crawlerRequest.getCrawlerCookies().get(i);
+				cookies.append(crawlerCookie.getName()).append("=").append(crawlerCookie.getValue());
+				if(crawlerRequest.getCrawlerCookies().size()-1 != i){
+					cookies.append("; ");
+				}
+			}
+		}
+		requestBuilder.header("User-Agent", StringUtils.isNotBlank(abstractCrawler.getCurrentUserAgent()) ? abstractCrawler.getCurrentUserAgent() : abstractCrawler.getUserAgent())
 				.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 				.header("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6");
+
+		if(StringUtils.isNotBlank(cookies)){
+			requestBuilder.header("Cookie", cookies.toString());
+		}
 
 		if(crawlerRequest.getHeader() != null && crawlerRequest.getHeader().size() > 0){
 			for (Map.Entry<String,String> entry:crawlerRequest.getHeader().entrySet()) {

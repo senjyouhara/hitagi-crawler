@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -80,7 +81,7 @@ public class CrawlerRequest implements Serializable {
 	/**
 	 * 支持添加自定义cookie
 	 */
-	private List<CrawlerCookie> crawlerCookies;
+	private List<CrawlerCookie> crawlerCookies = new ArrayList<>();
 
 	/**
 	 * 添加json request body支持

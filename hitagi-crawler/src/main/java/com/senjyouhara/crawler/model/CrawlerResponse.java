@@ -7,6 +7,8 @@ import org.jsoup.nodes.Document;
 import org.seimicrawler.xpath.JXDocument;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -25,6 +27,8 @@ public class CrawlerResponse implements Serializable {
 	private String content;
 
 	private String userAgent;
+
+	private List<CrawlerCookie> crawlerCookies = new ArrayList<>();
 
 	/**
 	 * 这个主要用于存储上游传递的一些自定义数据

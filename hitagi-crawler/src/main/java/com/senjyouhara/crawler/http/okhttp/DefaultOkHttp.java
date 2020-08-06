@@ -6,6 +6,7 @@ import com.senjyouhara.crawler.confg.CrawlerContext;
 import com.senjyouhara.crawler.enums.CrawlerBodyType;
 import com.senjyouhara.crawler.http.CrawlerHttpType;
 import com.senjyouhara.crawler.http.base.HttpDownload;
+import com.senjyouhara.crawler.model.CrawlerCookie;
 import com.senjyouhara.crawler.model.CrawlerRequest;
 import com.senjyouhara.crawler.model.CrawlerResponse;
 import lombok.extern.log4j.Log4j2;
@@ -15,8 +16,12 @@ import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.exception.XpathSyntaxErrorException;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,6 +70,7 @@ public class DefaultOkHttp implements HttpDownload {
 
 	private CrawlerResponse renderResponse(Response response, CrawlerRequest crawlerRequest) {
 
+
 		CrawlerResponse crawlerResponse = new CrawlerResponse();
 		crawlerResponse.setHttpType(CrawlerHttpType.OK_HTTP);
 		crawlerResponse.setUrl(crawlerRequest.getUrl());
@@ -72,12 +78,41 @@ public class DefaultOkHttp implements HttpDownload {
 		crawlerResponse.setRequest(crawlerRequest);
 		crawlerResponse.setMeta(crawlerRequest.getMeta());
 
+		List<String> nameAndValues = response.headers("Set-Cookie");
+		List<CrawlerCookie> crawlerCookies = new ArrayList<>();
+		Map<String,String> cookie = new HashMap<>();
+		for (int i = 0; i < nameAndValues.size(); i++) {
+			String s = nameAndValues.get(i);
+			String[] split = s.split(";");
+			if(split.length > 0){
+				String s1 = split[0];
+				String[] split1 = s1.split("=");
+				if(split1.length == 2){
+					cookie.put(split1[0],split1[1]);
+					CrawlerCookie crawlerCookie = new CrawlerCookie(split1[0],split1[1]);
+					crawlerCookies.add(crawlerCookie);
+				}
+			}
+		}
+		ArrayList<CrawlerCookie> crawlerCookies1 = new ArrayList<>();
+
+		if(crawlerRequest.getCrawlerCookies() != null && crawlerRequest.getCrawlerCookies().size() > 0){
+			crawlerCookies1.addAll(crawlerRequest.getCrawlerCookies());
+		}
+
+		if(crawlerCookies.size() > 0){
+			crawlerCookies1.addAll(crawlerCookies);
+		}
+		crawlerResponse.setCrawlerCookies(crawlerCookies1);
+		cookie.values().forEach(System.out::println);
+
+
 
 		ResponseBody okResponseBody = response.body();
-
 		if (okResponseBody!=null){
 			String type = okResponseBody.contentType().type().toLowerCase();
 			String subtype = okResponseBody.contentType().subtype().toLowerCase();
+
 			if (type.contains("text")||type.contains("json")||type.contains("ajax")||subtype.contains("json")
 					||subtype.contains("ajax")){
 				crawlerResponse.setBodyType(CrawlerBodyType.TEXT);
@@ -85,6 +120,7 @@ public class DefaultOkHttp implements HttpDownload {
 					byte[] data = okResponseBody.bytes();
 					String utfContent = new String(data, StandardCharsets.UTF_8);
 					String charsetFinal = renderRealCharset(utfContent);
+					log.info("charsetFinal :{}",charsetFinal);
 					if (charsetFinal.equals("UTF-8")){
 						crawlerResponse.setContent(utfContent);
 					}else {
