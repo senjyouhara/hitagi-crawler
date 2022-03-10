@@ -1,4 +1,4 @@
-package com.senjyouhara.crawler.confg;
+package com.senjyouhara.crawler.property;
 
 
 import lombok.Data;
@@ -11,15 +11,16 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("senjyouhara.crawler")
 public class CrawlerProperty {
 
-//	每个被@Crawler注解的对象又多少个线程运行
-	private int poolCount = 20;
+//	核心线程数
+	private Integer corePoolSize = 200;
 
-//	全局域名  如  www.baidu.com  或  123.45.56.78
-	private String host;
+//	最大线程数
+	private Integer maxPoolSize = 1000;
 
-//	全局端口
-	private int port;
+//	队列大小
+	private Integer queueCapacity = 100000;
 
-
+//	线程名前缀
+	private String threadNamePrefix = "hitagiExecutor-";
 
 }

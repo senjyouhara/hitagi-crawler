@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.senjyouhara.core.config.ApplicationContextHolder
+com.senjyouhara.commons.mail.MailAutoConfig

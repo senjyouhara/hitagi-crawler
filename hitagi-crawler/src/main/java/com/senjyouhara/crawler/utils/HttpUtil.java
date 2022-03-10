@@ -1,10 +1,12 @@
-package com.senjyouhara.core.http;
+package com.senjyouhara.crawler.utils;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.senjyouhara.core.date.DateUtils;
 import com.senjyouhara.core.json.JsonUtil;
 import com.senjyouhara.core.ssl.MyX509TrustManager;
+import com.senjyouhara.crawler.model.CrawlerCookie;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -43,10 +45,10 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -588,7 +590,7 @@ public class HttpUtil {
 	private static CloseableHttpClient sslClient() {
 		try {
 			SSLContext ctx = SSLContext.getInstance("TLS");
-			ctx.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
+			ctx.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new SecureRandom());
 			return httpClient(ctx);
 		} catch (KeyManagementException ex) {
 			throw new RuntimeException(ex);
@@ -612,7 +614,7 @@ public class HttpUtil {
 			// 创建SSLContext对象，并使用我们指定的信任管理器初始化
 			TrustManager[] tm = {new MyX509TrustManager()};
 			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-			sslContext.init(null, tm, new java.security.SecureRandom());
+			sslContext.init(null, tm, new SecureRandom());
 			// 从上述SSLContext对象中得到SSLSocketFactory对象
 			SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -723,7 +725,7 @@ public class HttpUtil {
 		try {
 			log.info("sendSSLPost - {}", urlNameString);
 			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
+			sc.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new SecureRandom());
 			URL console = new URL(urlNameString);
 			HttpsURLConnection conn = (HttpsURLConnection) console.openConnection();
 			conn.setRequestProperty("accept", "*/*");
@@ -816,5 +818,56 @@ public class HttpUtil {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public static List<CrawlerCookie> cookieParse(List<String> list){
+		List<CrawlerCookie> cookies = new ArrayList<>();
+		for (int i = 0; i < list.size(); i++) {
+			String s = list.get(i);
+			String[] split = s.split(";");
+			if(split.length > 0){
+				String s1 = split[0];
+				String[] split1 = s1.split("=");
+				if(split1.length == 2){
+					LocalDateTime expires = null;
+					if(split.length >= 2){
+						String s2 = split[1];
+						String[] split2 = s2.split("=");
+						if(split2.length == 2){
+							if(split2[0].trim().equals("expires")){
+								String pattern = "EEE, dd-MMM-yyyy HH:mm:ss zzz";
+								SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+								try {
+									Date date = format.parse(split2[1]);
+									expires = DateUtils.dateToLocalDate(date);
+								} catch (ParseException e) {
+									e.printStackTrace();
+									log.error("日期解析出错： {}",split2[1] );
+								}
+							}
+						}
+					}
+					CrawlerCookie crawlerCookie = new CrawlerCookie(split1[0],split1[1], expires);
+					cookies.add(crawlerCookie);
+				}
+			}
+		}
+		return cookies;
+	}
+
+	public static String cookie2String(Set<CrawlerCookie> set){
+
+		StringBuilder cookies = new StringBuilder();
+		if (set != null && set.size() > 0) {
+			List<CrawlerCookie> crawlerCookies = set.stream().distinct().collect(Collectors.toList());
+			for (int i = 0; i < crawlerCookies.size(); i++) {
+				CrawlerCookie crawlerCookie = crawlerCookies.get(i);
+				cookies.append(crawlerCookie.getName()).append("=").append(crawlerCookie.getValue());
+				if (set.size() - 1 != i) {
+					cookies.append("; ");
+				}
+			}
+		}
+		return cookies.toString();
 	}
 }

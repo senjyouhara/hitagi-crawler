@@ -1,9 +1,6 @@
 package com.senjyouhara.crawler.confg;
 
-import com.senjyouhara.crawler.ThreadPool.ThreadManager;
 import com.senjyouhara.crawler.base.AbstractCrawler;
-import com.senjyouhara.crawler.queue.QueueManager;
-import com.senjyouhara.crawler.model.CrawlerRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,21 +15,9 @@ public class CrawlerContext implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
 
-	private static QueueManager queueManager;
-
-	private static ThreadManager threadManager;
-
-	public static Map<String, List<CrawlerRequest>> getQueueMap(){
-		return queueManager.getMap();
-	}
-
 	public static List<Class<? extends AbstractCrawler>> crawlerClasses = new ArrayList<>();
 
 	public static Map<String, AbstractCrawler> crawlers = new HashMap<>();
-
-	public static List<CrawlerRequest> getQueueList(String crawlerName){
-		return queueManager.getAll(crawlerName);
-	}
 
 	public static List<Class<? extends AbstractCrawler>> getCrawlerClass() {
 		return crawlerClasses;
@@ -64,6 +49,7 @@ public class CrawlerContext implements ApplicationContextAware {
 			}
 		}
 	}
+
 	public static Map<String, AbstractCrawler> getCrawlers() {
 		return crawlers;
 
@@ -81,6 +67,7 @@ public class CrawlerContext implements ApplicationContextAware {
 
 		crawlers.put(name, e);
 	}
+
 	public static void removeCrawler(String name) {
 		if(name == null) {
 			return;
@@ -96,8 +83,6 @@ public class CrawlerContext implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		CrawlerContext.applicationContext = applicationContext;
-		queueManager = applicationContext.getBean(QueueManager.class);
-		threadManager = applicationContext.getBean(ThreadManager.class);
 	}
 
 	public static void run(String name){
@@ -114,7 +99,7 @@ public class CrawlerContext implements ApplicationContextAware {
 		bean.start();
 	}
 
-	public static void run(AbstractCrawler cons){
-		cons.start();
+	public static void run(AbstractCrawler crawler){
+		crawler.start();
 	}
 }

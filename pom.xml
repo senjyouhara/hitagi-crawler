@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.senjyouhara</groupId>
-	<artifactId>reptile-group</artifactId>
+	<artifactId>hitagi-crawler-group</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
@@ -10,7 +12,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>8</java.version>
+		<java.version>1.8</java.version>
 		<spring-context-support.version>1.0.2</spring-context-support.version>
 		<commons-collections4.version>4.2</commons-collections4.version>
 		<top.jfunc.common.utils.version>1.8.3.3</top.jfunc.common.utils.version>
@@ -54,10 +56,10 @@
 		<txlcn.version>5.0.2.RELEASE</txlcn.version>
 		<SeimiCrawler.version>2.1.2</SeimiCrawler.version>
 		<platform-bom>Cairo-SR3</platform-bom>
-		<spring-cloud-alibaba-dependencies.version>0.9.0.RELEASE</spring-cloud-alibaba-dependencies.version>
-		<spring-boot-dependencies.version>2.1.6.RELEASE</spring-boot-dependencies.version>
+		<spring-cloud-alibaba-dependencies.version>2.1.0.RELEASE</spring-cloud-alibaba-dependencies.version>
+		<spring-boot-dependencies.version>2.1.5.RELEASE</spring-boot-dependencies.version>
 		<spring-cloud-dependencies.version>Greenwich.SR3</spring-cloud-dependencies.version>
-		<spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
+		<spring-boot-maven-plugin.version>2.1.18.RELEASE</spring-boot-maven-plugin.version>
 		<docker-maven-plugin.version>1.2.0</docker-maven-plugin.version>
 		<sonar.exclusions>senjyouhara-job/**/*, senjyouhara-register/**/*, senjyouhara-web/**/*</sonar.exclusions>
 		<docker.baseImage>openjdk:8-jre-alpine</docker.baseImage>
@@ -66,6 +68,8 @@
 		<docker.java.security.egd>-Djava.security.egd=file:/dev/./urandom</docker.java.security.egd>
 		<docker.java.opts>-Xms128m -Xmx128m</docker.java.opts>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+		<maven-compiler.version>3.1</maven-compiler.version>
+		<maven-resources.version>3.1.0</maven-resources.version>
 	</properties>
 
 	<developers>
@@ -124,7 +128,29 @@
 
 	<dependencyManagement>
 		<dependencies>
-
+			<!-- druid 官方 starter -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid-spring-boot-starter</artifactId>
+				<version>${druid-starter}</version>
+			</dependency>
+			<!--            mysql-->
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${mysql.version}</version>
+			</dependency>
+			<!-- mybatis-plus start -->
+			<dependency>
+				<groupId>com.baomidou</groupId>
+				<artifactId>mybatis-plus-boot-starter</artifactId>
+				<version>${mybatis-plus-boot-starter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.baomidou</groupId>
+				<artifactId>mybatis-plus-extension</artifactId>
+				<version>${mybatis-plus-boot-starter.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
@@ -169,7 +195,7 @@
 
 			<dependency>
 				<groupId>com.senjyouhara</groupId>
-				<artifactId>hitagi-redis-spring-boot-starter</artifactId>
+				<artifactId>hitagi-mail-spring-boot-starter</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -206,7 +232,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>20.0</version>
+				<version>24.1.1-android</version>
 			</dependency>
 
 			<dependency>
@@ -221,22 +247,21 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
 				<configuration>
-					<encoding>UTF-8</encoding>
+					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -254,6 +279,16 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
 					<version>${maven-source-plugin.version}</version>
 				</plugin>
@@ -261,19 +296,19 @@
 		</pluginManagement>
 	</build>
 
-<!--	<repositories>-->
-<!--		<repository>-->
-<!--			<id>aliyun-repos</id>-->
-<!--			<name>Aliyun Repository</name>-->
-<!--			<url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
-<!--			<releases>-->
-<!--				<enabled>true</enabled>-->
-<!--			</releases>-->
-<!--			<snapshots>-->
-<!--				<enabled>false</enabled>-->
-<!--			</snapshots>-->
-<!--		</repository>-->
-<!--	</repositories>-->
+	<repositories>
+		<repository>
+			<id>aliyun-repos</id>
+			<name>Aliyun Repository</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -292,9 +327,8 @@
 	<modules>
 
 		<module>hitagi-core-spring-boot-starter</module>
-
+		<module>hitagi-mail-spring-boot-starter</module>
 		<module>hitagi-crawler</module>
-
 		<module>example</module>
 
 	</modules>

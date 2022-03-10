@@ -1,15 +1,17 @@
 package com.senjyouhara.crawler.base;
 
+import com.senjyouhara.core.collections.ListUtils;
 import com.senjyouhara.crawler.ThreadPool.ThreadManager;
-import com.senjyouhara.crawler.exception.CrawlerThreadException;
 import com.senjyouhara.crawler.model.CrawlerCookie;
-import com.senjyouhara.crawler.model.CrawlerProcess;
+import com.senjyouhara.crawler.http.CrawlerProcess;
 import com.senjyouhara.crawler.model.CrawlerRequest;
-import com.senjyouhara.crawler.queue.QueueManager;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @Log4j2
@@ -19,15 +21,12 @@ public abstract class AbstractCrawler implements BaseCrawler {
 
 	private CrawlerRequest oldRequest;
 
-	public String getCrawlerName() {
-		return crawlerName;
-	}
-
 	public void setCrawlerName(String crawlerName) {
 		this.crawlerName = crawlerName;
 	}
 
 	protected List<CrawlerRequest> requestList = new ArrayList<>();
+	protected List<CrawlerProcess> requestProcessList = new ArrayList<>();
 
 	private String currentUserAgent;
 
@@ -39,8 +38,6 @@ public abstract class AbstractCrawler implements BaseCrawler {
 		this.currentUserAgent = currentUserAgent;
 	}
 
-	@Autowired
-	protected QueueManager queueManager;
 	@Autowired
 	protected ThreadManager threadManager;
 
@@ -80,46 +77,77 @@ public abstract class AbstractCrawler implements BaseCrawler {
 		return null;
 	}
 
-	public void addRequest(CrawlerRequest crawlerRequest) {
+	private void mergeMeta(CrawlerRequest crawlerRequest) {
 
-		if (oldRequest != null) {
+		if (oldRequest == null) return;
+
 //			cookie 传递
-			if (oldRequest.isCookieTransfer()) {
-				List<CrawlerCookie> cookies = crawlerRequest.getCrawlerCookies();
-				List<CrawlerCookie> oldCookies = oldRequest.getCrawlerCookies();
-				ArrayList<CrawlerCookie> mergeCookies = new ArrayList<>(oldCookies);
-				if (cookies != null) {
-					mergeCookies.addAll(cookies);
-				}
-				crawlerRequest.setCrawlerCookies(mergeCookies);
-			}
+		Set<CrawlerCookie> cookies = crawlerRequest.getCrawlerCookies();
+		Set<CrawlerCookie> oldCookies = oldRequest.getCrawlerCookies();
+
+		Set<CrawlerCookie> mergeCookies = new HashSet<>();
+
+		if (oldCookies.size() > 0) {
+			mergeCookies.addAll(oldCookies);
+		}
+
+		if (cookies.size() > 0) {
+			mergeCookies.addAll(cookies);
+		}
+
+		if (mergeCookies.size() > 0) {
+			crawlerRequest.setCrawlerCookies(mergeCookies);
+		}
 
 //			元数据传递
-			if (oldRequest.getMeta() != null) {
-				Map<String, Object> meta = crawlerRequest.getMeta();
-				Map<String, Object> oldMeta = oldRequest.getMeta();
-				HashMap<String, Object> map = new HashMap<>();
+		if (oldRequest.getMeta().keySet().size() > 0) {
+			Map<String, Object> meta = crawlerRequest.getMeta();
+			Map<String, Object> oldMeta = oldRequest.getMeta();
+			HashMap<String, Object> map = new HashMap<>();
 
-				if (meta != null) {
-					map.putAll(meta);
-				}
-				if (oldMeta != null) {
-					map.putAll(oldMeta);
-				}
+			if (meta != null) {
+				map.putAll(meta);
+			}
+			if (oldMeta != null) {
+				map.putAll(oldMeta);
+			}
+
+			if (map.keySet().size() > 0) {
+				crawlerRequest.setMeta(map);
 			}
 		}
+
+		if (oldRequest.getProxy() != null) {
+
+			if (crawlerRequest.getProxy() == null) {
+				crawlerRequest.setProxy(oldRequest.getProxy());
+			}
+		}
+	}
+
+	public void addRequest(CrawlerRequest crawlerRequest) {
+
+
+		mergeMeta(crawlerRequest);
+
 		crawlerRequest.setCrawlerName(crawlerName);
 
-
-		CrawlerProcess crawlerProcess = new CrawlerProcess(crawlerName, crawlerRequest);
-		List<CrawlerRequest> queueAll = queueManager.getAll(crawlerName);
 		if (!requestList.contains(crawlerRequest)) {
 			requestList.add(crawlerRequest);
 		}
-		
-		queueManager.add(crawlerName, crawlerRequest);
-		threadManager.add(crawlerName, crawlerProcess);
+
+		CrawlerProcess process = ListUtils.find(requestProcessList, v -> v.getCrawlerRequest().equals(crawlerRequest) && v.getCrawlerName().equals(crawlerName));
+
 		oldRequest = crawlerRequest;
+
+		if (process != null) {
+			threadManager.invoke(process);
+		} else {
+			CrawlerProcess crawlerProcess = new CrawlerProcess(crawlerName, crawlerRequest);
+			requestProcessList.add(crawlerProcess);
+			threadManager.invoke(crawlerProcess);
+		}
+
 	}
 
 	//	开始产生请求队列 然后执行请求
@@ -131,7 +159,7 @@ public abstract class AbstractCrawler implements BaseCrawler {
 			}
 		} else {
 			List<CrawlerRequest> crawlerRequests = startRequests();
-			if (crawlerRequests != null) {
+			if (crawlerRequests != null && crawlerRequests.size() > 0) {
 				for (CrawlerRequest c : crawlerRequests) {
 					addRequest(c);
 				}
@@ -139,14 +167,8 @@ public abstract class AbstractCrawler implements BaseCrawler {
 		}
 	}
 
-	//	开启线程执行请求
-	public final void startRequest() {
-		try {
-			threadManager.invock(crawlerName);
-		} catch (Exception e) {
-			log.error(e);
-			throw new CrawlerThreadException("The " + crawlerName + " run faild");
-		}
+	public void save(byte[] data, String path) throws IOException {
+		FileUtils.writeByteArrayToFile(new File(path), data);
 	}
 
 

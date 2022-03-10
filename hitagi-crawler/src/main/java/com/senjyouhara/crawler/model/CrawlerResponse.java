@@ -1,15 +1,14 @@
 package com.senjyouhara.crawler.model;
 
 import com.senjyouhara.crawler.enums.CrawlerBodyType;
-import com.senjyouhara.crawler.http.CrawlerHttpType;
+import com.senjyouhara.crawler.enums.CrawlerHttpType;
 import lombok.Data;
-import org.jsoup.nodes.Document;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.seimicrawler.xpath.JXDocument;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class CrawlerResponse implements Serializable {
@@ -28,7 +27,7 @@ public class CrawlerResponse implements Serializable {
 
 	private String userAgent;
 
-	private List<CrawlerCookie> crawlerCookies = new ArrayList<>();
+	private Set<CrawlerCookie> crawlerCookies = new HashSet<>();
 
 	/**
 	 * 这个主要用于存储上游传递的一些自定义数据
@@ -45,10 +44,39 @@ public class CrawlerResponse implements Serializable {
 	/**
 	 * 此次请求结果的http处理器类型
 	 */
-	private CrawlerHttpType httpType;
+	private CrawlerHttpType httpType = CrawlerHttpType.HTTP_CLIENT;
 
 	public JXDocument document() {
 		return CrawlerBodyType.TEXT.equals(bodyType) && content != null ? JXDocument.create(content) : null;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CrawlerResponse that = (CrawlerResponse) o;
+
+		return new EqualsBuilder()
+				.append(bodyType, that.bodyType)
+				.append(request, that.request)
+				.append(content, that.content)
+				.append(meta, that.meta)
+				.append(url, that.url)
+				.append(params, that.params)
+				.isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37)
+				.append(bodyType)
+				.append(request)
+				.append(content)
+				.append(meta)
+				.append(url)
+				.append(params)
+				.toHashCode();
+	}
 }

@@ -1,8 +1,7 @@
 package com.senjyouhara.crawler.annotation;
 
 
-import com.senjyouhara.crawler.http.CrawlerHttpType;
-import org.springframework.context.annotation.Import;
+import com.senjyouhara.crawler.enums.CrawlerHttpType;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;

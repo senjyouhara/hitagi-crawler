@@ -1,8 +1,9 @@
-package com.senjyouhara.crawler.http;
+package com.senjyouhara.crawler.enums;
 
 public enum CrawlerHttpType {
 
 	OK_HTTP("ok_http"),
+	OTHER("other"),
 	HTTP_CLIENT("http_client");
 
 	private String val;

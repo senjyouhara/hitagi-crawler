@@ -1,5 +1,6 @@
 package com.senjyouhara.crawler.http.okhttp;
 
+import com.senjyouhara.core.json.JsonUtil;
 import com.senjyouhara.core.ssl.MyX509TrustManager;
 import com.senjyouhara.crawler.base.AbstractCrawler;
 import com.senjyouhara.crawler.enums.CrawlerContentType;
@@ -15,6 +16,7 @@ import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 public class OkHttpBuild {
@@ -54,18 +56,17 @@ public class OkHttpBuild {
 
 		requestBuilder.url(crawlerRequest.getUrl());
 		StringBuilder cookies = new StringBuilder();
-		if(crawlerRequest.getCrawlerCookies() != null && crawlerRequest.getCrawlerCookies().size() > 0){
-			for (int i = 0; i < crawlerRequest.getCrawlerCookies().size(); i++) {
-				CrawlerCookie crawlerCookie = crawlerRequest.getCrawlerCookies().get(i);
+		Set<CrawlerCookie> crawlerCookies = crawlerRequest.getCrawlerCookies();
+		if(crawlerCookies != null && crawlerCookies.size() > 0){
+			int i = 0;
+			for (CrawlerCookie crawlerCookie : crawlerCookies) {
 				cookies.append(crawlerCookie.getName()).append("=").append(crawlerCookie.getValue());
-				if(crawlerRequest.getCrawlerCookies().size()-1 != i){
+				if(crawlerRequest.getCrawlerCookies().size()-1 != i++){
 					cookies.append("; ");
 				}
 			}
 		}
-		requestBuilder.header("User-Agent", StringUtils.isNotBlank(abstractCrawler.getCurrentUserAgent()) ? abstractCrawler.getCurrentUserAgent() : abstractCrawler.getUserAgent())
-				.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-				.header("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6");
+		requestBuilder.header("User-Agent", StringUtils.isNotBlank(abstractCrawler.getCurrentUserAgent()) ? abstractCrawler.getCurrentUserAgent() : abstractCrawler.getUserAgent());
 
 		if(StringUtils.isNotBlank(cookies)){
 			requestBuilder.header("Cookie", cookies.toString());
@@ -78,8 +79,8 @@ public class OkHttpBuild {
 		}
 
 		if (HttpMethod.POST.equals(crawlerRequest.getHttpMethod())) {
-			if (StringUtils.isNotBlank(crawlerRequest.getJsonBody())){
-				RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),crawlerRequest.getJsonBody());
+			if (crawlerRequest.isHasJsonBody()){
+				RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JsonUtil.toJsonStr(crawlerRequest.getParams()));
 				requestBuilder.post(requestBody);
 			}else {
 				FormBody.Builder formBodyBuilder = new FormBody.Builder();

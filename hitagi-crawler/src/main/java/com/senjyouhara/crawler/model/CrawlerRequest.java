@@ -9,11 +9,10 @@ import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.http.HttpHost;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class CrawlerRequest implements Serializable {
@@ -32,11 +31,15 @@ public class CrawlerRequest implements Serializable {
 	/**
 	 * 如果请求需要参数，那么将参数放在这里
 	 */
-	private Map<String,String> params;
+	private Map<String,String> params = new HashMap<>();
 	/**
 	 * 这个主要用于存储向下级回调函数传递的一些自定义数据
 	 */
-	private Map<String,Object> meta;
+	private Map<String,Object> meta = new HashMap<>();
+	/**
+	 * 代理配置 暂未实现
+	 */
+	private HttpHost proxy;
 
 	/**
 	 * 回调函数
@@ -46,6 +49,12 @@ public class CrawlerRequest implements Serializable {
 	 * 是否停止的信号，收到该信号的处理线程会退出
 	 */
 	private boolean stop = false;
+
+	/**
+	 * 是否是json请求方式
+	 */
+	private boolean hasJsonBody = false;
+
 	/**
 	 * 最大可被重新请求次数
 	 */
@@ -74,19 +83,16 @@ public class CrawlerRequest implements Serializable {
 	/**
 	 * 自定义Http请求协议头
 	 */
-	private Map<String,String> header;
+	private Map<String,String> header = new HashMap();
 
 	private CrawlerContentType contentType = CrawlerContentType.HTML;
+
+	private String requestType = "application/x-www-form-urlencoded";
 
 	/**
 	 * 支持添加自定义cookie
 	 */
-	private List<CrawlerCookie> crawlerCookies = new ArrayList<>();
-
-	/**
-	 * 添加json request body支持
-	 */
-	private String jsonBody;
+	private Set<CrawlerCookie> crawlerCookies = new HashSet<>();
 
 	public void incrReqCount(){
 		this.currentReqCount +=1;
@@ -94,6 +100,10 @@ public class CrawlerRequest implements Serializable {
 
 	public CrawlerRequest setCrawlerName(String crawlerName) {
 		this.crawlerName = crawlerName;
+		return this;
+	}
+	public CrawlerRequest setRequestType(String requestType) {
+		this.requestType = requestType;
 		return this;
 	}
 
@@ -162,13 +172,21 @@ public class CrawlerRequest implements Serializable {
 		return this;
 	}
 
-	public CrawlerRequest setCrawlerCookies(List<CrawlerCookie> crawlerCookies) {
+	public CrawlerRequest setCrawlerCookies(Set<CrawlerCookie> crawlerCookies) {
 		this.crawlerCookies = crawlerCookies;
 		return this;
 	}
+	public CrawlerRequest setHasJsonBody(boolean hasJsonBody) {
+		this.hasJsonBody = hasJsonBody;
+		return this;
+	}
 
-	public CrawlerRequest setJsonBody(String jsonBody) {
-		this.jsonBody = jsonBody;
+	public HttpHost getProxy() {
+		return proxy;
+	}
+
+	public CrawlerRequest setProxy(HttpHost proxy) {
+		this.proxy = proxy;
 		return this;
 	}
 
@@ -196,7 +214,6 @@ public class CrawlerRequest implements Serializable {
 				.append(header, that.header)
 				.append(contentType, that.contentType)
 				.append(crawlerCookies, that.crawlerCookies)
-				.append(jsonBody, that.jsonBody)
 				.isEquals();
 	}
 
@@ -218,7 +235,6 @@ public class CrawlerRequest implements Serializable {
 				.append(header)
 				.append(contentType)
 				.append(crawlerCookies)
-				.append(jsonBody)
 				.toHashCode();
 	}
 

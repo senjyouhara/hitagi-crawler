@@ -3,13 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.senjyouhara</groupId>
-    <artifactId>reptile-group</artifactId>
+    <artifactId>hitagi-crawler-group</artifactId>
     <version>1.0.0</version>
   </parent>
   <artifactId>example</artifactId>
 
   <dependencies>
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -36,11 +35,33 @@
       <groupId>com.senjyouhara</groupId>
       <artifactId>hitagi-crawler</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.senjyouhara</groupId>
+      <artifactId>hitagi-mail-spring-boot-starter</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.github.ulisesbocchio</groupId>
       <artifactId>jasypt-spring-boot-starter</artifactId>
       <version>${jasypt.version}</version>
+    </dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-boot-starter</artifactId>
     </dependency>
 
 	</dependencies>
@@ -59,6 +80,6 @@
         </executions>
       </plugin>
     </plugins>
-    <finalName>${project.artifactId}</finalName>
   </build>
+
 </project>

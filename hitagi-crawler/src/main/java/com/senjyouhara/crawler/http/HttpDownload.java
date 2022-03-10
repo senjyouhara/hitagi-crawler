@@ -1,4 +1,4 @@
-package com.senjyouhara.crawler.http.base;
+package com.senjyouhara.crawler.http;
 
 import com.senjyouhara.crawler.model.CrawlerRequest;
 import com.senjyouhara.crawler.model.CrawlerResponse;
