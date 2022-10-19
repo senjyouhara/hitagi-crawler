@@ -50,7 +50,7 @@
 		<qiniu-java-sdk>7.2.17</qiniu-java-sdk>
 		<easypoi.version>4.0.0</easypoi.version>
 		<spring-boot-admin.version>2.1.0</spring-boot-admin.version>
-		<jackson.version>2.13.2</jackson.version>
+		<jackson.version>2.13.4</jackson.version>
 		<velocity.version>1.7</velocity.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
 		<txlcn.version>5.0.2.RELEASE</txlcn.version>
